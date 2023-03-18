@@ -1,6 +1,6 @@
 const React = require('react')
 const Def = require('../default.jsx')
-function edit_form () {
+function edit_form (data) {
     return (
         <Def>
             <main>
