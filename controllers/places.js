@@ -1,95 +1,78 @@
 const router = require('express').Router()
-const places = require('../models/places.js')
+const db = require('../models')
 
-//MAIN PG
-router.get('/',(req,res) => {
-    res.render('places/index',{places})
+
+//HOME PAGE / PLACE INDEX
+router.get('/', (req,res) => {
+    db.Place.find()
+    .then((places) => {
+      res.render('places/index', {places})
+    })
+    .catch(err => {
+      console.log(err)
+      res.render('error404')
+    })
 })
 
-//NEW
-router.get('/new', (req, res) => {
+//CREATE
+router.post('/',(req,res) => {
+  db.Place.create(req.body)
+  .then(() => {
+    res.redirect('/places')
+  })
+  .catch(err => {
+    console.log('err',err)
+    res.render('error404')
+  })
+})
+
+//FORM PAGE
+router.get('/new', (req,res) => {
   res.render('places/new')
 })
-//EDIT
-router.get('/:id/edit', (req, res) => {
-  let id = Number(req.params.id)
-  if (isNaN(id)) {
-      res.render('error404')
-  }
-  else if (!places[id]) {
-      res.render('error404')
-  }
-  else {
-    res.render('places/edit', { place: places[id] })
-  }
+
+//PARTICULAR PLACE 
+router.get('/:id', (req, res) => {
+  db.Place.findById(req.params.id)
+  .then(place => {
+    res.render('places/show', {place})
+  })
+  .catch(err => {
+    console.log('err',err)
+    res.render('error404')
+  })
 })
 
-//SHOW
-router.get('/:id', (req,res) => {
-  res.render('places/show',{place:places[id]})
-  if (isNaN(id)) {
-    res.render('error404')
-  } else if (!places[id]) {
-    res.render('error404')
-  } else {
-    res.render('places/show',{place:place[id], id})
-  }  
-})
 
-router.post('/', (req, res) => {
-  console.log(req.body)
-  if (!req.body.pic) {
-    // Default image if one is not provided
-    req.body.pic = 'http://placepuppy.com/400x400'
-  }
-  if (!req.body.city) {
-    req.body.city = 'Anytown'
-  }
-  if (!req.body.state) {
-    req.body.state = 'USA'
-  }
-  places.push(req.body)
-  res.redirect('../models/places')
-})
 
-//Delete
-router.delete('/:id', (req,res) => {
-  let id = Number(req.params.id)
-  if (isNaN(id)) {
-    res.render('error404')
-  }
-  else if (!place[id]) {
-    res.render('error404')
-  } else {
-    places.splice(id,1)
-    res.redirect('/places')
-  }
-})  
-
+//UPDATE PARTICULAR PLACE
 router.put('/:id', (req, res) => {
-  let id = Number(req.params.id)
-  if (isNaN(id)) {
-      res.render('error404')
-  }
-  else if (!places[id]) {
-      res.render('error404')
-  }
-  else {
-    //Dig into req.body and make sure data is valid
-    if (!req.body.pic) {
-      //Default image if one is not provided
-      req.body.pic = 'http://placekitten.com/400/400'
-    }
-    if (!req.body.city) {
-      req.body.city = 'Anytown'
-    }
-    if (!req.body.state) {
-      req.body.state = 'USA'
-    }
-    //Save the new data into places[id]
-    places[id] = req.body
-    res.redirect(`/places/${id}`)
-  }
+  res.send('PUT /places/:id stub')
 })
- 
+
+
+
+
+//FORM PAGE
+router.get('/:id/edit', (req, res) => {
+  res.send('GET edit form stub')
+})
+
+
+//DELETE PLACE
+router.delete('/:id', (req, res) => {
+  res.send('DELETE /places/:id stub')
+})
+
+//CREATE A (RANT COMMENT) ABOUT A PARTICULAR PLACE
+router.post('/:id/rant', (req,res) => {
+  res.send('GET /places/:id/rant stub')
+})
+
+//DELETE A (RANT COMMENT) ABOUT A PLACE
+router.delete('/:id/rant/:rantId', (req,res) => {
+  res.send('GET /places/:ed/rant/:rantId stub')
+})
+
+
 module.exports = router

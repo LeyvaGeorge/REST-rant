@@ -1,31 +1,36 @@
 //Modules and Globals
 require('dotenv').config()
+
 const express = require('express')
-const app = express()
+const server = express()
+
+//Depend
 const methodOverride = require('method-override')
-//Express Settings
-app.set('views',__dirname + '/views')   
-app.set('view engine','jsx')
-app.engine('jsx',require('express-react-views').createEngine())
-app.use(express.static('public'))
-app.use(express.urlencoded({extended:true}))
-app.use(methodOverride('_method'))
 
-//Controllers & Routes
-app.use('/places', require('./controllers/places'))
+//Express Setting (MIDDLEWARE)
+server.use(methodOverride('_method'))
+server.use(express.static('public'))
+server.use(express.urlencoded({ extended:true}))
+server.set('views',__dirname + '/views')
+server.set('view engine','jsx')
+server.engine('jsx',require('express-react-views').createEngine())
 
-app.use(express.urlencoded({ extended: true }))
 
-app.get('/', (req, res) => {
+//sends to home
+server.get('/', (req,res) => {
     res.render('home')
 })
-    //Catch all for errors
-app.get('*', (req, res) => {
+
+//=====  Controllers & Routes  =====
+const placesController = require('./controllers/places')
+server.use('/places', placesController)
+
+//sends to 404 page
+server.get('*', (req,res) => {
     res.render('error404')
 })
 
 //Listen for Connections
-app.listen(process.env.PORT)
-
-
-
+server.listen(process.env.PORT,function () {
+    console.log("Server running: 8080")
+})
